@@ -26,7 +26,7 @@ class DiscordAlertBot(discord.Client):
 intents = discord.Intents.default()
 intents.message_content = True
 
-def send_discord_alert(message):
+def send_message(message):
     discord_alert_bot = DiscordAlertBot(intents=intents)
     discord_alert_bot.set_message(message)
     discord_alert_bot.run(TOKEN)
