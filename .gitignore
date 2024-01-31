@@ -1,0 +1,8 @@
+private
+
+*.pyc
+
+__pycache__/
+
+test
+
