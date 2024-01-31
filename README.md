@@ -1,9 +1,10 @@
 # supertrend-cloud
 Coin trading bot using supertrend-cloud strategy
 
-### private key
+### private-key
 Server
-- ASW EC2 pem key
+- ASW EC2 pem key  
+
 Alert
 - Discord Channel ID
 - Discord Bot Token
