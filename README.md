@@ -11,3 +11,4 @@ Alert
 
 ### Libraries
 - [Discord](https://discordpy.readthedocs.io/en/stable/)
+- [cryptography]()
