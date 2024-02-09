@@ -25,8 +25,29 @@ class Binance:
     def get_balance(self):
         return self.balance
 
-    def get_binance(self):
-        return self.binance
+    def get_top_volume_coin_list(self, coin_cnt):
+        tickers = self.binance.fetch_tickers()
+        dic_coin_money = dict()
 
-# binance = Binance()
-# print(binance.get_balance())
+        for ticker in tickers:
+            try:
+                if "/USDT" in ticker:
+                    dic_coin_money[ticker] = tickers[ticker]['baseVolume'] * \
+                        tickers[ticker]['close']
+            except Exception as e:
+                print("---:", e)
+
+        dic_sorted_coin_money = sorted(
+            dic_coin_money.items(), key=lambda x: x[1], reverse=True)
+
+        coin_list = list()
+        cnt = 0
+
+        for coin_data in dic_sorted_coin_money:
+            cnt += 1
+            if cnt <= coin_cnt:
+                coin_list.append(coin_data[0])
+            else:
+                break
+
+        return coin_list
