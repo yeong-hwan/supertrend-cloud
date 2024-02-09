@@ -36,24 +36,23 @@ RSA
 - ACCESS(RSA Encryption using Binance API Key)
 - SECRET(RSA Encryption using Binance Secret Key)
 
-### Libraries
-Alert
-- [Discord](https://discordpy.readthedocs.io/en/stable/)
-
-RSA
-- [RSA]()
-- [cryptography]()
-
 - - -
 
-### Libraries
-- conda
+## Libraries
+### conda
+Alert
   - [Discord](https://discordpy.readthedocs.io/en/stable/)
+
+RSA
+  - [RSA](https://pypi.org/project/rsa/)
   - [cryptography](https://pypi.org/project/cryptography/)
   
-- pip(by conda)
+### pip(by conda)
+CCXT(Binance)
   - [CCXT(version 2.5.67)](https://github.com/ccxt/ccxt)
+
+Math
   - [numpy](https://numpy.org/)
 
-### References
+## References
 - [Supertrend-Cloud-Strategy](https://kr.tradingview.com/script/sO5mkXTE-SuperTrend-Cloud-Strategy/) by [jhanson107](https://kr.tradingview.com/u/jhanson107/)
