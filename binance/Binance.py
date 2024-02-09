@@ -8,12 +8,12 @@ import ccxt
 class Binance:
     def __init__(self):
         rsa_decrypt = RsaEnDecrypt.RsaEnDecrypt(private_key.RSA['ENCRYPT_KEY'])
-        binance_access = rsa_decrypt.decrypt(private_key.RSA['ACCESS'])
-        binance_secret = rsa_decrypt.decrypt(private_key.RSA['SECRET'])
+        BINANCE_ACCESS = rsa_decrypt.decrypt(private_key.RSA['ACCESS'])
+        BINANCE_SECRET = rsa_decrypt.decrypt(private_key.RSA['SECRET'])
 
         self.binance = ccxt.binance(config={
-            'apiKey': binance_access,
-            'secret': binance_secret,
+            'apiKey': BINANCE_ACCESS,
+            'secret': BINANCE_SECRET,
             'enableRateLimit': True,
             'options': {
                 'defaultType': 'future'
