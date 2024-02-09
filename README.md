@@ -39,9 +39,13 @@ RSA
 - - -
 
 ### Libraries
-- [Discord](https://discordpy.readthedocs.io/en/stable/)
-- [cryptography]()
-- [CCXT](https://github.com/ccxt/ccxt)
+- conda
+  - [Discord](https://discordpy.readthedocs.io/en/stable/)
+  - [cryptography]()
+  
+- pip(by conda)
+  - [CCXT](https://github.com/ccxt/ccxt)
+  - [numpy](https://numpy.org/)
 
 ### References
 - [Supertrend-Cloud-Strategy](https://kr.tradingview.com/script/sO5mkXTE-SuperTrend-Cloud-Strategy/) by [jhanson107](https://kr.tradingview.com/u/jhanson107/)
