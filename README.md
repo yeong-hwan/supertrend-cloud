@@ -44,7 +44,7 @@ RSA
   - [cryptography]()
   
 - pip(by conda)
-  - [CCXT](https://github.com/ccxt/ccxt)
+  - [CCXT(version 2.5.67)](https://github.com/ccxt/ccxt)
   - [numpy](https://numpy.org/)
 
 ### References
