@@ -23,8 +23,10 @@ class Binance:
         self.balance = self.binance.fetch_balance(params={"type": "future"})
 
     def get_balance(self):
-        print(self.balance)
         return self.balance
+
+    def get_binance(self):
+        return self.binance
 
 # binance = Binance()
 # print(binance.get_balance())
