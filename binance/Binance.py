@@ -1,6 +1,8 @@
 import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+
 from private import private_key
+from constants import constants
 import RsaEnDecrypt
 
 import ccxt
@@ -63,6 +65,8 @@ class Binance:
 
         return ticker_list
 
+
+    # period: (1d,4h,1h,15m,10m,1m ...)
     def get_ohlcv(self, ticker, period):
         binance_ohlcv = self.binance.fetch_ohlcv(ticker, period)
 
@@ -76,3 +80,45 @@ class Binance:
         ohlcv.set_index('datetime', inplace=True)
 
         return ohlcv
+
+    def get_min_amount(self, ticker):
+        limit_values = self.binance.markets[ticker]['limits']
+
+        min_amount = limit_values['amount']['min']
+        min_cost = limit_values['cost']['min']
+        min_price = limit_values['price']['min']
+
+        ticker_info = self.binance.fetch_ticker(ticker)
+        coin_price = ticker_info['last']
+
+        print(f"| Coin_price : {coin_price} $")
+        # print(f"| min_cost : {min_cost} $ -> min_amount")
+        # print(f"| min_amount : {min_amount} EA")
+        # print(f"| min_price : {min_price} $")
+
+        # get mininum unit price to be able to order
+        if min_price < coin_price:
+            min_price = coin_price
+
+        # order cost = price * amount
+        min_order_cost = min_price * min_amount
+
+        multiple_cnt = 1
+
+        if min_cost is not None and min_order_cost < min_cost:
+            # if min_order_cost is smaller than min cost
+            # increase the min_order_cost bigger than min cost
+            # by the multiple multiple_cnt of minimum amount
+            while min_order_cost < min_cost:
+                multiple_cnt += 1
+                min_order_cost = min_price * (multiple_cnt * min_amount)
+
+        minimum_amount = multiple_cnt * min_amount
+
+        return (min_order_cost, minimum_amount)
+
+    def get_ticker_current_price(self, ticker):
+        ticker_info = self.binance.fetch_ticker(ticker)
+        coin_price = ticker_info['last']  # coin_info['close'] == coin_info['last']
+
+        return coin_price
