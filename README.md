@@ -46,13 +46,16 @@ Alert
 RSA
   - [RSA](https://pypi.org/project/rsa/)
   - [cryptography](https://pypi.org/project/cryptography/)
-  
+
+
 ### pip(by conda)
 CCXT(Binance)
   - [CCXT(version 2.5.67)](https://github.com/ccxt/ccxt)
 
 Math
   - [numpy](https://numpy.org/)
+  - [Pandas](https://pandas.pydata.org/)
+  - [Pandas TA](https://github.com/twopirllc/pandas-ta)
 
 ## References
 - [Supertrend-Cloud-Strategy](https://kr.tradingview.com/script/sO5mkXTE-SuperTrend-Cloud-Strategy/) by [jhanson107](https://kr.tradingview.com/u/jhanson107/)
