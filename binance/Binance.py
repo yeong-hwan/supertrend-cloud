@@ -4,6 +4,7 @@ from private import private_key
 import RsaEnDecrypt
 
 import ccxt
+import pandas as pd
 
 class Binance:
     def __init__(self):
@@ -25,29 +26,53 @@ class Binance:
     def get_balance(self):
         return self.balance
 
-    def get_top_volume_coin_list(self, coin_cnt):
+
+    def get_top_volume_ticker_list(self, ticker_cnt):
         tickers = self.binance.fetch_tickers()
-        dic_coin_money = dict()
+        dic_ticker_volume = dict()
 
         for ticker in tickers:
             try:
                 if "/USDT" in ticker:
-                    dic_coin_money[ticker] = tickers[ticker]['baseVolume'] * \
+                    dic_ticker_volume[ticker] = tickers[ticker]['baseVolume'] * \
                         tickers[ticker]['close']
             except Exception as e:
                 print("---:", e)
 
-        dic_sorted_coin_money = sorted(
-            dic_coin_money.items(), key=lambda x: x[1], reverse=True)
+        dic_sorted_ticker_volume = sorted(
+            dic_ticker_volume.items(), key=lambda x: x[1], reverse=True)
 
-        coin_list = list()
+        ticker_list = list()
         cnt = 0
 
-        for coin_data in dic_sorted_coin_money:
+        for ticker in dic_sorted_ticker_volume:
+            # only get USDT ticker
+            if "/USDT" not in ticker[0]:
+                continue
+            
+            # exception for banned tickers
+            BANNED_TICKERS = constants.TICKER['BANNED']
+            if ticker in BANNED_TICKERS:
+                continue
+
             cnt += 1
-            if cnt <= coin_cnt:
-                coin_list.append(coin_data[0])
+            if cnt <= ticker_cnt:
+                ticker_list.append(ticker[0])
             else:
                 break
 
-        return coin_list
+        return ticker_list
+
+    def get_ohlcv(self, ticker, period):
+        binance_ohlcv = self.binance.fetch_ohlcv(ticker, period)
+
+        ohlcv = pd.DataFrame(binance_ohlcv,columns=[
+            'datetime', 'open',
+            'high', 'low',
+            'close', 'volume'
+        ])
+
+        ohlcv['datetime'] = pd.to_datetime(ohlcv['datetime'], unit='ms')
+        ohlcv.set_index('datetime', inplace=True)
+
+        return ohlcv

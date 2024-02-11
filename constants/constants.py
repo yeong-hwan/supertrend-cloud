@@ -9,5 +9,6 @@ PATH = {
 }
 
 TICKER = {
-    "BANNED": ["SRM/USDT", "FTT/USDT"]
+    "BANNED": ["SRM/USDT", "FTT/USDT"],
+    "TICKER_COUNT": 10
 }
