@@ -9,6 +9,22 @@ def get_usd_krw():
     return exchange[0]['basePrice']
 
 
+def get_side(candle_close_current, st_1, st_2):
+    result = ""
+
+    if ((candle_close_current < st_1) & (candle_close_current > st_2)) \
+    or ((candle_close_current > st_1) & (candle_close_current < st_2)):
+        result = "cloud"
+
+    if (candle_close_current > st_1) & (candle_close_current > st_2):
+        result = "upside"
+
+    if (candle_close_current < st_1) & (candle_close_current < st_2):
+        result = "downside"
+
+    return result
+
+
 def get_state(state_before, state_current):
     state_now = ""
 
@@ -35,8 +51,21 @@ def get_state(state_before, state_current):
 
     return state_now
 
+def get_supertrend(candle, period, multiplier):
+    supertrend = pandas_ta.supertrend(
+        high = candle['high'],
+        low = candle['low'],
+        close = candle['close'],
+        period = period,
+        multiplier = multiplier
+    )
 
-def get_supertrend_cloud(candle, candle_type, btc=False):
+    return supertrend
+
+def get_supertrend_line(supertrend, idx):
+    return supertrend.iloc[-idx][0]
+
+def get_supertrend_cloud(candle, candle_type="5m", btc=False):
     candle_close_series = candle['close']
 
     # current : endded[-1], before : endded[-2]
@@ -62,12 +91,10 @@ def get_supertrend_cloud(candle, candle_type, btc=False):
     sell_state_current, sell_state_before = "", ""  # -2, -3
 
     for i in range(2, 4):
-        supertrend_1 = pandas_ta.supertrend(
-            high=candle['high'], low=candle['low'], close=candle['close'], period=period_1, multiplier=multi_1)
+        supertrend_1 = get_supertrend(candle, period_1, multi_1)
         supertrend_line_1 = supertrend_1.iloc[-i][0]
 
-        supertrend_2 = pandas_ta.supertrend(
-            high=candle['high'], low=candle['low'], close=candle['close'], period=period_2, multiplier=multi_2)
+        supertrend_2 = get_supertrend(candle, period_2, multi_2)
         supertrend_line_2 = supertrend_2.iloc[-i][0]
 
         side_at_i = get_side(candle_close_series[-i],
@@ -82,12 +109,10 @@ def get_supertrend_cloud(candle, candle_type, btc=False):
     buy_state_current, buy_state_before = "", ""  # -3, -4
 
     for i in range(3, 5):
-        supertrend_1 = pandas_ta.supertrend(
-            high=candle['high'], low=candle['low'], close=candle['close'], period=period_1, multiplier=multi_1)
+        supertrend_1 = get_supertrend(candle, period_1, multi_1)
         supertrend_line_1 = supertrend_1.iloc[-i][0]
 
-        supertrend_2 = pandas_ta.supertrend(
-            high=candle['high'], low=candle['low'], close=candle['close'], period=period_2, multiplier=multi_2)
+        supertrend_2 = get_supertrend(candle, period_2, multi_2)
         supertrend_line_2 = supertrend_2.iloc[-i][0]
 
         side_at_i = get_side(candle_close_series[-i],
