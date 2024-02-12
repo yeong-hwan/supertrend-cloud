@@ -10,9 +10,11 @@ import pandas as pd
 
 class Binance:
     def __init__(self):
-        rsa_decrypt = RsaEnDecrypt.RsaEnDecrypt(private_key.RSA['ENCRYPT_KEY'])
-        BINANCE_ACCESS = rsa_decrypt.decrypt(private_key.RSA['ACCESS'])
-        BINANCE_SECRET = rsa_decrypt.decrypt(private_key.RSA['SECRET'])
+        RSA = private_key.RSA
+        
+        rsa_decrypt = RsaEnDecrypt.RsaEnDecrypt(RSA['ENCRYPT_KEY'])
+        BINANCE_ACCESS = rsa_decrypt.decrypt(RSA['ACCESS'])
+        BINANCE_SECRET = rsa_decrypt.decrypt(RSA['SECRET'])
 
         self.binance = ccxt.binance(config={
             'apiKey': BINANCE_ACCESS,
@@ -53,7 +55,7 @@ class Binance:
                 continue
             
             # exception for banned tickers
-            BANNED_TICKERS = constants.TICKER['BANNED']
+            BANNED_TICKERS = constants.SETTING['TICKER']['BANNED']
             if ticker in BANNED_TICKERS:
                 continue
 
