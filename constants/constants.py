@@ -45,6 +45,14 @@ STATE = {
     }
 }
 
+POSITION = {
+    "CLOSE": ["COI", "CUI", "BS", "BL"],
+    "OPEN": {
+        "LONG": ["COO", "BL"],
+        "SHORT": ["CUO", "BS"]
+    }
+}
+
 SUPERTREND = {
     "5M": {
         "PERIOD_1": 6,
