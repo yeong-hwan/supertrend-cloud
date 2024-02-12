@@ -1,26 +1,51 @@
-BINANCE = {
-    "LEVERAGE": 3,
-    "IS_ISOLATED": True
+SETTING = {
+    "BINANCE": {
+        "LEVERAGE": 3,
+        "IS_ISOLATED": True
+    },
+    "PATH": {
+        # "SERVER": "/var/trading-bot/positioned_list.json",
+        "LOCAL": "log/positioned_list.json"
+    },
+    "TICKER": {
+        "BANNED": [
+            "SRM/USDT",
+            "FTT/USDT"
+        ],
+        "COUNT": 20
+    }
 }
 
-PATH = {
-    # "SERVER": "/var/trading-bot/positioned_list.json",
-    "LOCAL": "log/positioned_list.json"
-}
 
-TICKER = {
-    "BANNED": [
-        "SRM/USDT",
-        "FTT/USDT"
-    ],
-    "TICKER_COUNT": 10
+SIDE = {
+    "CLOUD": "C",
+    "ABOVE": "A",
+    "BELOW": "B"
 }
 
 STATE = {
-    "CLOUD"
+    "STABLE": {
+        "CLOUD": "SC",
+        "ABOVE": "SA",
+        "BELOW": "SB"
+    },
+    "CROSS": {
+        "OVER": {
+            "IN": "COI",
+            "OUT": "COO"
+        },
+        "UNDER": {
+            "IN": "CUI",
+            "OUT": "CUO"
+        }
+    },
+    "BIG": {
+        "LONG": "BL",
+        "SHORT": "BS"
+    }
 }
 
-SUPERTREND_SETTING = {
+SUPERTREND = {
     "5M": {
         "PERIOD_1": 6,
         "MULTIPLIER_1": 10,
