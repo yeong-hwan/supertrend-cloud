@@ -34,7 +34,8 @@ def get_side(candle_close_current, st_1, st_2):
     return result
 
 
-def get_state(state_before, state_current):
+def get_state(sides):
+    side_before, side_current = sides
     state_now = ""
 
     CLOUD = constants.SIDE['CLOUD']
@@ -42,25 +43,25 @@ def get_state(state_before, state_current):
     BELOW = constants.SIDE['BELOW']
     STATE = constants.STATE
 
-    if state_before == CLOUD and state_current == CLOUD:
+    if side_before == CLOUD and side_current == CLOUD:
         state_now = STATE['STABLE']['CLOUD']
-    elif state_before == ABOVE and state_current == ABOVE:
+    elif side_before == ABOVE and side_current == ABOVE:
         state_now = STATE['STABLE']['ABOVE']
-    elif state_before == BELOW and state_current == BELOW:
+    elif side_before == BELOW and side_current == BELOW:
         state_now = STATE['STABLE']['BELOW']
 
-    if state_before == CLOUD and state_current == ABOVE:
+    if side_before == CLOUD and side_current == ABOVE:
         state_now = STATE['CROSS']['OVER']['OUT']
-    elif state_before == CLOUD and state_current == BELOW:
+    elif side_before == CLOUD and side_current == BELOW:
         state_now = STATE['CROSS']['UNDER']['OUT']
-    elif state_before == ABOVE and state_current == CLOUD:
+    elif side_before == ABOVE and side_current == CLOUD:
         state_now = STATE['CROSS']['UNDER']['IN']
-    elif state_before == BELOW and state_current == CLOUD:
+    elif side_before == BELOW and side_current == CLOUD:
         state_now = STATE['CROSS']['OVER']['IN']
 
-    if state_before == ABOVE and state_current == BELOW:
+    if side_before == ABOVE and side_current == BELOW:
         state_now = STATE['BIG']['SHORT']
-    elif state_before == BELOW and state_current == ABOVE:
+    elif side_before == BELOW and side_current == ABOVE:
         state_now = STATE['BIG']['LONG']
 
     return state_now
@@ -155,11 +156,8 @@ def get_supertrend_cloud(candle, candle_type="5m", btc=False):
     sell_sides = get_sell_sides(candle, settings)
     buy_sides = get_buy_sides(candle, settings)
 
-    sell_side_before, sell_side_current = sell_sides
-    buy_side_before, buy_side_current = buy_sides
-
-    sell_state = get_state(sell_side_before, sell_side_current)
-    buy_state = get_state(buy_side_before, buy_side_current)
+    sell_state = get_state(sell_sides)
+    buy_state = get_state(buy_sides)
 
     orders = check_order(sell_state, buy_state)
 
