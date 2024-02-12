@@ -1,4 +1,11 @@
+import sys, os
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+
+from constants import constants
+
 import requests
+import pandas_ta
+
 
 def get_usd_krw():
     headers = {
@@ -12,15 +19,17 @@ def get_usd_krw():
 def get_side(candle_close_current, st_1, st_2):
     result = ""
 
+    SIDE = constants.SIDE
+
     if ((candle_close_current < st_1) & (candle_close_current > st_2)) \
     or ((candle_close_current > st_1) & (candle_close_current < st_2)):
-        result = "cloud"
+        result = SIDE['CLOUD']
 
     if (candle_close_current > st_1) & (candle_close_current > st_2):
-        result = "upside"
+        result = SIDE['ABOVE']
 
     if (candle_close_current < st_1) & (candle_close_current < st_2):
-        result = "downside"
+        result = SIDE['BELOW']
 
     return result
 
@@ -28,26 +37,31 @@ def get_side(candle_close_current, st_1, st_2):
 def get_state(state_before, state_current):
     state_now = ""
 
-    if state_before == "cloud" and state_current == "cloud":
-        state_now = "C"
-    elif state_before == "upside" and state_current == "upside":
-        state_now = "L"
-    elif state_before == "downside" and state_current == "downside":
-        state_now = "S"
+    CLOUD = constants.SIDE['CLOUD']
+    ABOVE = constants.SIDE['ABOVE']
+    BELOW = constants.SIDE['BELOW']
+    STATE = constants.STATE
 
-    if state_before == "cloud" and state_current == "upside":
-        state_now = "Crossover Out"
-    elif state_before == "cloud" and state_current == "downside":
-        state_now = "Crossunder Out"
-    elif state_before == "upside" and state_current == "cloud":
-        state_now = "Crossunder In"
-    elif state_before == "downside" and state_current == "cloud":
-        state_now = "Crossover In"
+    if state_before == CLOUD and state_current == CLOUD:
+        state_now = STATE['STABLE']['CLOUD']
+    elif state_before == ABOVE and state_current == ABOVE:
+        state_now = STATE['STABLE']['ABOVE']
+    elif state_before == BELOW and state_current == BELOW:
+        state_now = STATE['STABLE']['BELOW']
 
-    if state_before == "upside" and state_current == "downside":
-        state_now = "Big Short"
-    elif state_before == "downside" and state_current == "upside":
-        state_now = "Big Long"
+    if state_before == CLOUD and state_current == ABOVE:
+        state_now = STATE['CROSS']['OVER']['OUT']
+    elif state_before == CLOUD and state_current == BELOW:
+        state_now = STATE['CROSS']['UNDER']['OUT']
+    elif state_before == ABOVE and state_current == CLOUD:
+        state_now = STATE['CROSS']['UNDER']['IN']
+    elif state_before == BELOW and state_current == CLOUD:
+        state_now = STATE['CROSS']['OVER']['IN']
+
+    if state_before == ABOVE and state_current == BELOW:
+        state_now = STATE['BIG']['SHORT']
+    elif state_before == BELOW and state_current == ABOVE:
+        state_now = STATE['BIG']['LONG']
 
     return state_now
 
@@ -63,83 +77,104 @@ def get_supertrend(candle, period, multiplier):
     return supertrend
 
 def get_supertrend_line(supertrend, idx):
-    return supertrend.iloc[-idx][0]
+    return supertrend.iloc[-idx].iloc[0]
+
+def get_supertrend_lines(candle, settings, idx):
+    supertrend_line_1, supertrend_line_2 = 0, 0
+    PERIOD_1, MULTIPLIER_1, PERIOD_2, MULTIPLIER_2 = settings
+
+    supertrend_1 = get_supertrend(candle, PERIOD_1, MULTIPLIER_1)
+    supertrend_line_1 = get_supertrend_line(supertrend_1, idx)
+
+    supertrend_2 = get_supertrend(candle, PERIOD_2, MULTIPLIER_2)
+    supertrend_line_2 = get_supertrend_line(supertrend_2, idx)
+
+    return (supertrend_line_1, supertrend_line_2)
+
+
+def get_sell_sides(candle, settings):
+    close_of_candles = candle['close']
+
+    # sell_state
+    sell_side_current, sell_side_before = "", ""  # -2, -3
+
+    for idx in range(2, 4):
+        supertrend_line_1, supertrend_line_2 = get_supertrend_lines(candle, settings, idx)
+
+        sell_side = get_side(close_of_candles.iloc[-idx],
+                            supertrend_line_1, supertrend_line_2)
+
+        if idx == 2:
+            sell_side_current = sell_side
+        elif idx == 3:
+            sell_side_before = sell_side
+
+    return (sell_side_before, sell_side_current)
+
+def get_buy_sides(candle, settings):
+    close_of_candles = candle['close']
+
+    # buy_state
+    buy_side_current, buy_side_before = "", ""  # -3, -4
+
+    for idx in range(3, 5):
+        supertrend_line_1, supertrend_line_2 = get_supertrend_lines(candle, settings, idx)
+
+        buy_side = get_side(close_of_candles.iloc[-idx],
+                            supertrend_line_1, supertrend_line_2)
+
+        if idx == 3:
+            buy_side_current = buy_side
+        elif idx == 4:
+            buy_side_before = buy_side
+        
+    return (buy_side_before, buy_side_current)
 
 def get_supertrend_cloud(candle, candle_type="5m", btc=False):
-    candle_close_series = candle['close']
-
-    # current : endded[-1], before : endded[-2]
-    # candle_close_current = candle_close_series[-2]
-    # candle_close_before = candle_close_series[-3]
-
-    period_1, multi_1, period_2, multi_2 = 0, 0, 0, 0
+    PERIOD_1, MULTIPLIER_1, PERIOD_2, MULTIPLIER_2 = 0, 0, 0, 0
     supertrend_line_1, supertrend_line_2 = 0, 0
 
     long_condition, short_condition, cloud_condition = False, False, False
 
     # variable setting
+    SUPERTREND = constants.SUPERTREND
+
     if candle_type == "5m":
-        period_1, multi_1, period_2, multi_2 = 6, 10, 10, 6
+        PERIOD_1 = SUPERTREND['5M']['PERIOD_1']
+        MULTIPLIER_1 = SUPERTREND['5M']['MULTIPLIER_1']
+        PERIOD_2 = SUPERTREND['5M']['PERIOD_2']
+        MULTIPLIER_2 = SUPERTREND['5M']['MULTIPLIER_2']
 
     # elif btc == True and candle_type == "4h":
     #     period_1, multi_1, period_2, multi_2 = 4, 2.4, 4, 4.8
 
     # elif candle_type == "4h":
     #     period_1, multi_1, period_2, multi_2 = 10, 3, 10, 6
+    settings = (PERIOD_1, MULTIPLIER_1, PERIOD_2, MULTIPLIER_2)
 
-    # sell_state
-    sell_state_current, sell_state_before = "", ""  # -2, -3
+    sell_sides = get_sell_sides(candle, settings)
+    buy_sides = get_buy_sides(candle, settings)
 
-    for i in range(2, 4):
-        supertrend_1 = get_supertrend(candle, period_1, multi_1)
-        supertrend_line_1 = supertrend_1.iloc[-i][0]
+    sell_side_before, sell_side_current = sell_sides
+    buy_side_before, buy_side_current = buy_sides
 
-        supertrend_2 = get_supertrend(candle, period_2, multi_2)
-        supertrend_line_2 = supertrend_2.iloc[-i][0]
+    sell_state = get_state(sell_side_before, sell_side_current)
+    buy_state = get_state(buy_side_before, buy_side_current)
 
-        side_at_i = get_side(candle_close_series[-i],
-                              supertrend_line_1, supertrend_line_2)
+    orders = check_order(sell_state, buy_state)
 
-        if i == 2:
-            sell_state_current = side_at_i
-        elif i == 3:
-            sell_state_before = side_at_i
+    return orders
+    # return long_condition, short_condition, cloud_condition, supertrend_line_1, supertrend_line_2, buy_state
 
-    # buy_state
-    buy_state_current, buy_state_before = "", ""  # -3, -4
+def check_order(sell_state, buy_state):
+    POSITION = constants.POSITION
+    open_long, open_short, close_position = (False, False, False)
 
-    for i in range(3, 5):
-        supertrend_1 = get_supertrend(candle, period_1, multi_1)
-        supertrend_line_1 = supertrend_1.iloc[-i][0]
+    if sell_state in POSITION['CLOSE']:
+        close_position = True
+    if buy_state in POSITION['OPEN']['LONG']:
+        open_long = True
+    if buy_state in POSITION['OPEN']['SHORT']:
+        open_long = True
 
-        supertrend_2 = get_supertrend(candle, period_2, multi_2)
-        supertrend_line_2 = supertrend_2.iloc[-i][0]
-
-        side_at_i = get_side(candle_close_series[-i],
-                              supertrend_line_1, supertrend_line_2)
-
-        if i == 3:
-            buy_state_current = side_at_i
-        elif i == 4:
-            buy_state_before = side_at_i
-
-    sell_state = get_state(sell_state_before, sell_state_current)
-    buy_state = get_state(buy_state_before, buy_state_current)
-
-    if sell_state[-2:] == "In":
-        cloud_condition = True
-    elif buy_state == "Crossover Out":
-        long_condition = True
-    elif buy_state == "Crossunder Out":
-        short_condition = True
-
-    elif sell_state[:3] == "Big":
-        cloud_condition = True
-        position_side = sell_state[4:]
-
-        if position_side == "Long":
-            long_condition = True
-        elif position_side == "Short":
-            short_condition = True
-
-    return long_condition, short_condition, cloud_condition, supertrend_line_1, supertrend_line_2, buy_state
+    return (open_long, open_short, close_position)

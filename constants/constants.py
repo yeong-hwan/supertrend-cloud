@@ -12,7 +12,7 @@ SETTING = {
             "SRM/USDT",
             "FTT/USDT"
         ],
-        "COUNT": 20
+        "COUNT": 1  # 20
     }
 }
 
