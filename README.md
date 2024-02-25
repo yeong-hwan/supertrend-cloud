@@ -5,17 +5,20 @@ Coin trading bot using supertrend-cloud strategy
 ### What is Supertrend?
 The SuperTrend indicator is a technical tool that you can use to identify trends and generate buy/sell signals. It takes the form of a single line that's overlaid onto a market's chart and follows the price action, switching from red to green as momentum shifts.
 
-![](img/supertrend.png?raw=true)
+<p align="center">
+  <img src="img/supertrend.png" alt="drawing" width="600"/>
+</p>
 
 ### Supertrend-Cloud
-![](img/supertrend_cloud_example.jpeg?raw=true)
+<img src="img/supertrend_cloud_example.jpeg" alt="drawing" width="800"/>
 
 - We call gap between two Supertrend as Cloud
   - Crossover Cloud: Open Long position
   - Crossunder Cloud: Open Short position
   - In Cloud: Close position
 
-![](img/position_example.jpeg?raw=true)
+<img src="img/position_example.jpeg" alt="drawing" width="800"/>
+
 - In a big short or big long situation, it closes the position and opens the opposite position at the same time
 
 - - -
