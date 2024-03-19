@@ -31,19 +31,25 @@ class Binance:
 
 
     def set_leverage(self, ticker_symbol):
-        self.binance.fapiPrivate_post_leverage({
-            'symbol': ticker_symbol,
-            'leverage': constants.SETTING['LEVERAGE']
-        })
-        time.sleep(0.1)
+        try:
+            self.binance.fapiPrivate_post_leverage({
+                'symbol': ticker_symbol,
+                'leverage': constants.SETTING['LEVERAGE']
+            })
+            time.sleep(0.1)
+        except Exception as e:
+            pass
 
 
     def set_margin_type(self, ticker_symbol):
-        self.binance.fapiPrivate_post_margintype({
-            'symbol': ticker_symbol,
-            'marginType': constants.SETTING['MARGIN_TYPE']['ISOLATED']
-        })
-        time.sleep(0.1)
+        try: 
+            self.binance.fapiPrivate_post_margintype({
+                'symbol': ticker_symbol,
+                'marginType': constants.SETTING['MARGIN_TYPE']['ISOLATED']
+            })
+            time.sleep(0.1)
+        except Exception as e:
+            pass
 
 
     def get_balance(self):
