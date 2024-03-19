@@ -28,18 +28,23 @@ class Binance:
 
         self.balance = self.binance.fetch_balance(params={"type": "future"})
         time.sleep(0.02)
-    
+
+
+    def set_leverage(self, ticker_symbol):
         self.binance.fapiPrivate_post_leverage({
-            'symbol': target_coin_symbol,
+            'symbol': ticker_symbol,
             'leverage': constants.SETTING['LEVERAGE']
         })
         time.sleep(0.1)
 
+
+    def set_margin_type(self, ticker_symbol):
         self.binance.fapiPrivate_post_margintype({
-            'symbol': target_coin_symbol,
+            'symbol': ticker_symbol,
             'marginType': constants.SETTING['MARGIN_TYPE']['ISOLATED']
         })
         time.sleep(0.1)
+
 
     def get_balance(self):
         return self.balance
