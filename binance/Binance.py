@@ -3,7 +3,7 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from private import private_key
 from constants import constants
-import RsaEnDecrypt
+from util import RsaEnDecrypt
 
 import ccxt
 import pandas as pd
