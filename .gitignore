@@ -4,3 +4,4 @@ private
 
 __pycache__/
 
+*.log
