@@ -8,6 +8,7 @@ from util import RsaEnDecrypt
 import ccxt
 import pandas as pd
 import time
+import requests
 
 class Binance:
     def __init__(self):
@@ -30,8 +31,9 @@ class Binance:
         time.sleep(0.02)
 
 
-    def set_leverage(self, ticker_symbol):
+    def set_leverage(self, ticker):
         try:
+            ticker_symbol = ticker.replace("/", "")
             self.binance.fapiPrivate_post_leverage({
                 'symbol': ticker_symbol,
                 'leverage': constants.SETTING['LEVERAGE']
@@ -41,8 +43,9 @@ class Binance:
             pass
 
 
-    def set_margin_type(self, ticker_symbol):
+    def set_margin_type(self, ticker):
         try: 
+            ticker_symbol = ticker.replace("/", "")
             self.binance.fapiPrivate_post_margintype({
                 'symbol': ticker_symbol,
                 'marginType': constants.SETTING['MARGIN_TYPE']['ISOLATED']
@@ -52,8 +55,31 @@ class Binance:
             pass
 
 
-    def get_balance(self):
-        return self.balance
+    # USD -> KRW
+    def get_exchange_rate(self):
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+        url = 'https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWUSD'
+        exchange = requests.get(url, headers=headers).json()
+
+        return exchange[0]['basePrice']
+
+
+    def get_balance_info(self):
+        exchange_rate = self.get_exchange_rate()
+        balance_usd = format(round(float(self.balance['USDT']['total']), 3), ',')
+        balance_krw = format(round(float(balance_usd) * exchange_rate, 3), ',')
+        positioned = float(self.balance['USDT']['used'])
+        remainder = float(self.balance['USDT']['free'])
+        return (balance_usd, balance_krw, positioned, remainder)
+
+
+
+    def get_buy_amount(self, min_mount):
+        ticker_budget = float(self.balance['USDT']['total'])
+        ticker_budget /= constants.SETTING['TICKER']['COUNT']
+        return None
+
 
 
     def get_top_volume_ticker_list(self, ticker_cnt):
@@ -118,10 +144,10 @@ class Binance:
         ticker_info = self.binance.fetch_ticker(ticker)
         coin_price = ticker_info['last']
 
-        print(f"| Coin_price : {coin_price} $")
-        # print(f"| min_cost : {min_cost} $ -> min_amount")
-        # print(f"| min_amount : {min_amount} EA")
-        # print(f"| min_price : {min_price} $")
+        print(f"| coin-price : {coin_price} $")
+        print(f"| min-cost : {min_cost} $")
+        print(f"| min-amount : {min_amount} EA")
+        print(f"| min-price : {min_price} $")
 
         # get mininum unit price to be able to order
         if min_price < coin_price:
@@ -144,8 +170,8 @@ class Binance:
 
         return (min_order_cost, minimum_amount)
 
-    def get_ticker_current_price(self, ticker):
+    def get_current_price(self, ticker):
         ticker_info = self.binance.fetch_ticker(ticker)
-        coin_price = ticker_info['last']  # coin_info['close'] == coin_info['last']
+        current_price = ticker_info['last']  # coin_info['close'] == coin_info['last']
 
-        return coin_price
+        return current_price
