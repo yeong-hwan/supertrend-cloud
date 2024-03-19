@@ -7,6 +7,7 @@ from util import RsaEnDecrypt
 
 import ccxt
 import pandas as pd
+import time
 
 class Binance:
     def __init__(self):
@@ -26,6 +27,19 @@ class Binance:
         })
 
         self.balance = self.binance.fetch_balance(params={"type": "future"})
+        time.sleep(0.02)
+    
+        self.binance.fapiPrivate_post_leverage({
+            'symbol': target_coin_symbol,
+            'leverage': constants.SETTING['LEVERAGE']
+        })
+        time.sleep(0.1)
+
+        self.binance.fapiPrivate_post_margintype({
+            'symbol': target_coin_symbol,
+            'marginType': constants.SETTING['MARGIN_TYPE']['ISOLATED']
+        })
+        time.sleep(0.1)
 
     def get_balance(self):
         return self.balance

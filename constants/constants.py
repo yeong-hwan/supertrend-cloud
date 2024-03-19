@@ -1,12 +1,16 @@
 SETTING = {
-    "BINANCE": {
-        "LEVERAGE": 3,
-        "IS_ISOLATED": True
+    "LEVERAGE": 3,
+
+    "MARGIN_TYPE": {
+        "ISOLATED": "ISOLATED",
+        "CROSS": "CROSS"
     },
+
     "PATH": {
-        # "SERVER": "/var/trading-bot/positioned_list.json",
-        "LOCAL": "log/positioned_list.json"
+        "LOCAL": "logs/positioned_list.json",
+        "SERVER": "/var/supertrend-cloud/logs/positioned_list.json"
     },
+
     "TICKER": {
         "BANNED": [
             "SRM/USDT",
@@ -29,6 +33,7 @@ STATE = {
         "ABOVE": "SA",
         "BELOW": "SB"
     },
+
     "CROSS": {
         "OVER": {
             "IN": "COI",
@@ -39,6 +44,7 @@ STATE = {
             "OUT": "CUO"
         }
     },
+
     "BIG": {
         "LONG": "BL",
         "SHORT": "BS"
@@ -60,12 +66,14 @@ SUPERTREND = {
         "PERIOD_2": 10,
         "MULTIPLIER_2": 6
     },
+
     "4H": {
         "PERIOD_1": 10,
         "MULTIPLIER_1": 3,
         "PERIOD_2": 10,
         "MULTIPLIER_2": 6
     },
+
     "BTC_4H": {
         "PERIOD_1": 4,
         "MULTIPLIER_1": 2.4,
@@ -73,5 +81,3 @@ SUPERTREND = {
         "MULTIPLIER_2": 4.8
     }
 }
-
-# print(SUPERTREND_SETTING['5M']['PERIOD'])
