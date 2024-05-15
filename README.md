@@ -1,6 +1,8 @@
 # Supertrend-Cloud Trading
 Coin trading bot using supertrend-cloud strategy
 
+[Legacy Project](https://github.com/yeong-hwan/trading-bot)
+
 ## Strategy Overview
 ### What is Supertrend?
 The SuperTrend indicator is a technical tool that you can use to identify trends and generate buy/sell signals. It takes the form of a single line that's overlaid onto a market's chart and follows the price action, switching from red to green as momentum shifts.
@@ -21,7 +23,7 @@ The SuperTrend indicator is a technical tool that you can use to identify trends
 
 - In a big short or big long situation, it closes the position and opens the opposite position at the same time
 
-- - -
+
 
 ## Setting
 ### Supertrend Parameter
@@ -39,7 +41,7 @@ RSA
 - ACCESS(RSA Encryption using Binance API Key)
 - SECRET(RSA Encryption using Binance Secret Key)
 
-- - -
+
 
 ## Libraries
 ### conda
@@ -59,6 +61,7 @@ Math
   - [numpy](https://numpy.org/)
   - [Pandas](https://pandas.pydata.org/)
   - [Pandas TA](https://github.com/twopirllc/pandas-ta)
+  - [pyarrow](https://arrow.apache.org/docs/python/index.html)
 
 ## References
 - [Supertrend-Cloud-Strategy](https://kr.tradingview.com/script/sO5mkXTE-SuperTrend-Cloud-Strategy/) by [jhanson107](https://kr.tradingview.com/u/jhanson107/)
